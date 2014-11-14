@@ -386,7 +386,7 @@
 		CALL(sys_sendmmsg)
 /* 375 */	CALL(sys_setns)
 		CALL(sys_process_vm_readv)
-		CALL(sys_process_vm_writevu)
+		CALL(sys_process_vm_writev)
 		CALL(sys_expose_page_table)
 #ifndef syscalls_counted
 .equ syscalls_padding, ((NR_syscalls + 3) & ~3) - NR_syscalls

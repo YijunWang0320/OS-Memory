@@ -30,7 +30,8 @@ unsigned long, addr) {
     				pmd_t *pmd = pud + k * PMD_SIZE;
     				if(pmd_none(pmd) || pmd_bad(pmd))
     					continue;
-    				if(l = 0; l < PTRS_PER_PTE; l++)
+    				
+    				for(l = 0; l < PTRS_PER_PTE; l++)
     				{
     					pte_t *pte = pmd + l * PAGE_SIZE;
     					printk("pte val: %lu", pte_val(*pte));

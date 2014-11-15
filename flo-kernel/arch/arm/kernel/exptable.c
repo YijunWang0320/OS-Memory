@@ -28,7 +28,7 @@ unsigned long, addr) {
     			for(k = 0; k < PTRS_PER_PMD; ++k)
     			{
     				pmd_t *pmd = pud + k * PMD_SIZE;
-    				if(pmd_none(pmd) || pmd_bad(pmd))
+    				if(pmd_none(*pmd) || pmd_bad(*pmd))
     					continue;
     				
     				for(l = 0; l < PTRS_PER_PTE; l++)

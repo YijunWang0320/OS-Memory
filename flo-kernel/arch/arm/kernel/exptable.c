@@ -34,18 +34,12 @@ unsigned long, addr) {
     				for(l = 0; l < PTRS_PER_PTE; l++)
     				{
     					pte_t *pte = pmd + l * PAGE_SIZE;
-    					printk("pte val: %lu", pte_val(*pte));
-    					printk("pte index: %lu", pte_index(*pte));
+    					printk("[index]\t[virt]\t[phys]\t[young bit]\t[file bit]\t[dirty bit]\t[read-only bit]\t[xn bit]\n");
+    					printk("%lu\t%X\t%X\t%lu\t%lu\t%lu\t%lu\t%lu\t\n", pte_index(*pte), 0, *pte, pte_young(*pte),pte_file(*pte),pte_dirty(*pte), pte_write(*pte), pte_exec(*pte));
     				}
     			}
 
     		}
-	
-		printk("=====================\n");
-        	printk("pgd[0]: %lu\n",pgd[0]);
-		printk("*pgd[0]: %lu\n",*pgd[0]);
-		printk("pgd_index(*pgd[0]): %lu\n",pgd_index(*pgd[0]));
-		printk("pte_index(*pgd[0]): %lu\n",pte_index(*pgd[0]));
 		}
 	}
 	return 10;		

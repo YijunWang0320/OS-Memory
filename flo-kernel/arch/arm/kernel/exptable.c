@@ -32,9 +32,9 @@ unsigned long, addr) {
     					continue;
     				if(l = 0; l < PTRS_PER_PTE; l++)
     				{
-    					pte_t *pte = pmd + l * PTE_SIZE;
-    					if(pte_none(pte) || pte_bad(pte))
-    						continue;
+    					pte_t *pte = pmd + l * PAGE_SIZE;
+    					printk("pte val: %lu", pte_val(*pte));
+    					printk("pte index: %lu", pte_index(*pte));
     				}
     			}
 

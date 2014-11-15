@@ -17,7 +17,11 @@ unsigned long, addr) {
     		pgd_t *pgd = ts->mm->pgd + i;
     		if (pgd_none(*pgd) || pgd_bad(*pgd))
         		continue; 
-        	printk("%lu\n",pgd[0]);
+		printk("=====================\n");
+        	printk("pgd[0]: %lu\n",pgd[0]);
+		printk("*pgd[0]: %lu\n",*pgd[0]);
+		printk("pgd_index(*pgd[0]): %lu\n",pgd_index(*pgd[0]));
+		printk("pte_index(*pgd[0]): %lu\n",pte_index(*pgd[0]));
 		}
 	}
 	return 10;		

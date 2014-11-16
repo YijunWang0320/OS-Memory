@@ -4,7 +4,7 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #define pmd_large(pmd)		(pmd_val(pmd) & 2)
-static void walk_pgd(struct task_struct *p);
+static void walk_pgd(struct task_struct *p,unsigned long start);
 SYSCALL_DEFINE3(expose_page_table,pid_t,pid,unsigned long, fake_pgd,
 unsigned long, addr) {
 	struct pid *p;
@@ -17,7 +17,7 @@ unsigned long, addr) {
 		 pgd_t *tmp_pgd = ts->mm->pgd;
 		 struct mm_struct *mm = current->mm;
 		 struct vm_area_struct *vma = find_vma(mm,fake_pgd);
-		 remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
+		 remap_pfn_range(vma,fake_pgd,tmp_pgd[0],PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
 		// for(i=0;i<PTRS_PER_PGD;i++) {
 		// 	pgd_t *pgd = ts->mm->pgd + i;
 		// 	printk("pgd:%lu,*pgd:%lu\n",pgd,*pgd);

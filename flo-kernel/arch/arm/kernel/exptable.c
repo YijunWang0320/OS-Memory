@@ -84,7 +84,7 @@ static void walk_pud(pgd_t *pgd, unsigned long start)
 static void walk_pgd(struct task_struct *p)
 {
 	pgd_t *pgd = p->mm->pgd;
-	printk("in walk pgd\n");
+	//printk("in walk pgd\n");
 	unsigned long addr;
 	unsigned i;
 	for (i = 0;
@@ -93,7 +93,7 @@ static void walk_pgd(struct task_struct *p)
 		if (!pgd_none(*pgd)) {
 			walk_pud(pgd, addr);
 		} else {
-			//printk("in pdg none\n");
+			printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));
 		}
 	}

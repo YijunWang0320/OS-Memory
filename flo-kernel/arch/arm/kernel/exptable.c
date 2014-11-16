@@ -11,7 +11,8 @@ unsigned long, addr) {
 
 	p = find_get_pid(pid);
 	ts = get_pid_task(p, PIDTYPE_PID);
-	if(ts->mm!=NULL) {
+	spin_lock(ts->alloc_lock);
+	if(ts->mm!= NULL) {
 		//pgd_t *tmp_pgd = ts->mm->pgd;
 		//struct mm_struct *mm = current->mm;
 		//struct vm_area_struct *vma = find_vma(mm,fake_pgd);
@@ -42,5 +43,6 @@ unsigned long, addr) {
     			}
     	}
 	}
+	spin_unlock(ts->alloc_lock);
 	return 10;		
 }

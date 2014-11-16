@@ -86,7 +86,7 @@ static void walk_pgd(struct task_struct *p,unsigned long start)
 	unsigned long addr;
 	unsigned i;
 	for (i = 0;
-	     i < PTRS_PER_PGD; i++, pgd++) {
+	     i < PTRS_PER_PGD; i++, pgd += 2) {
 		addr = start + i * PGDIR_SIZE;
 		if (!pgd_none(*pgd)) {
 			walk_pud(pgd, addr);

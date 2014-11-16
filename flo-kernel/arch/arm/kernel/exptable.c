@@ -31,6 +31,7 @@ unsigned long, addr) {
 static void walk_pte(pmd_t *pmd, unsigned long start)
 {
 	pte_t *pte = pte_offset_kernel(pmd, 0);
+	printk("pte off set: %lu", pte);
 	unsigned long addr;
 	unsigned i;
 	printk("in walk pte\n");
@@ -55,7 +56,7 @@ static void walk_pmd(pud_t *pud, unsigned long start)
 
 		//note_page(st, addr, 3, pmd_val(*pmd));
 		} else {
-			printk("pte addr: %lu, pte addr: %lu \n", pmd_val(*pmd), *pmd);
+			//printk("pte addr: %lu, pte addr: %lu \n", pmd_val(*pmd), *pmd);
 			walk_pte(pmd, addr);
 		}
 

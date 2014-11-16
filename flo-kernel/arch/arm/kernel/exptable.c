@@ -14,16 +14,15 @@ unsigned long, addr) {
 	p = find_get_pid(pid);
 	ts = get_pid_task(p, PIDTYPE_PID);
 	if(ts->mm!=NULL) {
-		// pgd_t *tmp_pgd = ts->mm->pgd;
-		// struct mm_struct *mm = current->mm;
-		// struct vm_area_struct *vma = find_vma(mm,fake_pgd);
-		// remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*8,VM_READ);
-		walk_pgd(ts);
+		 pgd_t *tmp_pgd = ts->mm->pgd;
+		 struct mm_struct *mm = current->mm;
+		 struct vm_area_struct *vma = find_vma(mm,fake_pgd);
+		 remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
 		// for(i=0;i<PTRS_PER_PGD;i++) {
 		// 	pgd_t *pgd = ts->mm->pgd + i;
 		// 	printk("pgd:%lu,*pgd:%lu\n",pgd,*pgd);
 		// }
-
+		walk_pgd(ts,addr);
 	}
 	spin_unlock(&ts->alloc_lock);
 	return 10;		
@@ -31,10 +30,10 @@ unsigned long, addr) {
 static void walk_pte(pmd_t *pmd, unsigned long start)
 {
 	pte_t *pte = pte_offset_kernel(pmd, 0);
-	printk("pte off set: %lu", pte);
+	//printk("pte off set: %lu", pte);
 	unsigned long addr;
 	unsigned i;
-	printk("in walk pte\n");
+	//printk("in walk pte\n");
 
 	for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
 		addr = start + i * PAGE_SIZE;
@@ -42,18 +41,17 @@ static void walk_pte(pmd_t *pmd, unsigned long start)
 		//printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
 	}
 }
-
 static void walk_pmd(pud_t *pud, unsigned long start)
 {
 	pmd_t *pmd = pmd_offset(pud, 0);
 	unsigned long addr;
 	unsigned i;
-	printk("in walk pmd\n");
+	//printk("in walk pmd\n");
 
 	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
 		addr = start + i * PMD_SIZE;
 		if (pmd_none(*pmd) || pmd_large(*pmd) || !pmd_present(*pmd)) {
-			printk("pmd none:%d,%d,%d *pmd:%lu\n",pmd_none(*pmd),pmd_large(*pmd),pmd_present(*pmd),*pmd);
+			//printk("pmd none:%d,%d,%d *pmd:%lu\n",pmd_none(*pmd),pmd_large(*pmd),pmd_present(*pmd),*pmd);
 		//note_page(st, addr, 3, pmd_val(*pmd));
 		} else {
 			//printk("pte addr: %lu, pte addr: %lu \n", pmd_val(*pmd), *pmd);
@@ -66,7 +64,7 @@ static void walk_pmd(pud_t *pud, unsigned long start)
 static void walk_pud(pgd_t *pgd, unsigned long start)
 {
 	pud_t *pud = pud_offset(pgd, 0);
-	printk("in walk pud\n");
+	//printk("in walk pud\n");
 	unsigned long addr;
 	unsigned i;
 
@@ -76,12 +74,12 @@ static void walk_pud(pgd_t *pgd, unsigned long start)
 			walk_pmd(pud, addr);
 		} else {
 			//note_page(st, addr, 2, pud_val(*pud));
-			printk("in pud none\n");
+			//printk("in pud none\n");
 		}
 	}
 }
 
-static void walk_pgd(struct task_struct *p)
+static void walk_pgd(struct task_struct *p,unsigned long start)
 {
 	pgd_t *pgd = p->mm->pgd;
 	//printk("in walk pgd\n");
@@ -89,11 +87,12 @@ static void walk_pgd(struct task_struct *p)
 	unsigned i;
 	for (i = 0;
 	     i < PTRS_PER_PGD; i++, pgd++) {
-		addr = i * PGDIR_SIZE;
+		addr = start + i * PGDIR_SIZE;
 		if (!pgd_none(*pgd)) {
 			walk_pud(pgd, addr);
+			printk("*pgd:%lu,pgd[0]:%lu,pgd:%lu\n",*pgd,pgd[0],pgd);
 		} else {
-			printk("in pdg none\n");
+			//printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));
 		}
 	}

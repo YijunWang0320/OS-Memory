@@ -16,12 +16,12 @@ unsigned long, addr) {
 		//struct mm_struct *mm = current->mm;
 		//struct vm_area_struct *vma = find_vma(mm,fake_pgd);
 		//remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*8,VM_READ);
-		walk_pgd();
+		walk_pgd(ts->mm->pgd);
 
 	}
 	return 10;		
 }
-static void walk_pte(struct pg_state *st, pmd_t *pmd, unsigned long start)
+static void walk_pte(pmd_t *pmd, unsigned long start)
 {
 	pte_t *pte = pte_offset_kernel(pmd, 0);
 	unsigned long addr;
@@ -34,7 +34,7 @@ static void walk_pte(struct pg_state *st, pmd_t *pmd, unsigned long start)
 	}
 }
 
-static void walk_pmd(struct pg_state *st, pud_t *pud, unsigned long start)
+static void walk_pmd(pud_t *pud, unsigned long start)
 {
 	pmd_t *pmd = pmd_offset(pud, 0);
 	unsigned long addr;
@@ -46,11 +46,11 @@ static void walk_pmd(struct pg_state *st, pud_t *pud, unsigned long start)
 
 		//note_page(st, addr, 3, pmd_val(*pmd));
 		} else
-			walk_pte(st, pmd, addr);
+			walk_pte(pmd, addr);
 	}
 }
 
-static void walk_pud(struct pg_state *st, pgd_t *pgd, unsigned long start)
+static void walk_pud(pgd_t *pgd, unsigned long start)
 {
 	pud_t *pud = pud_offset(pgd, 0);
 	unsigned long addr;
@@ -59,7 +59,7 @@ static void walk_pud(struct pg_state *st, pgd_t *pgd, unsigned long start)
 	for (i = 0; i < PTRS_PER_PUD; i++, pud++) {
 		addr = start + i * PUD_SIZE;
 		if (!pud_none(*pud)) {
-			walk_pmd(st, pud, addr);
+			walk_pmd(pud, addr);
 		} else {
 			//note_page(st, addr, 2, pud_val(*pud));
 			//printk("in pud there is none\n");
@@ -67,10 +67,9 @@ static void walk_pud(struct pg_state *st, pgd_t *pgd, unsigned long start)
 	}
 }
 
-static void walk_pgd()
+static void walk_pgd(struct task_struct *p)
 {
-	pgd_t *pgd = swapper_pg_dir;
-	struct pg_state st;
+	pgd_t *pgd = p->mm->pgd;
 	unsigned long addr;
 	unsigned i;
 
@@ -78,11 +77,11 @@ static void walk_pgd()
 	st.seq = m;
 	st.marker = address_markers;
 
-	for (i = USER_PGTABLES_CEILING / PGDIR_SIZE;
+	for (i = 0;
 	     i < PTRS_PER_PGD; i++, pgd++) {
 		addr = i * PGDIR_SIZE;
 		if (!pgd_none(*pgd)) {
-			walk_pud(&st, pgd, addr);
+			walk_pud(pgd, addr);
 		} else {
 			//printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));

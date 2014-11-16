@@ -1,10 +1,10 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<syscall.h>
-int main()
+int main(int argc, char *argv[])
 {
-	long pid;
-	int ret = syscall(378,421,1,1);
+	int pid  = atoi(argv[1]);
+	int ret = syscall(378,pid,1,1);
 	printf("%d",ret);
 	return 0;
 }

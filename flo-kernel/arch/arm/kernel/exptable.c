@@ -17,7 +17,7 @@ unsigned long, addr) {
     		pgd_t *pgd = ts->mm->pgd + i;
 
     		if (pgd_none(*pgd) || pgd_bad(*pgd))
-        		continue; 	
+        		continue;
     		
     		for(j = 0; j < PTRS_PER_PUD;++j)
     		{

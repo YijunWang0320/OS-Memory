@@ -15,7 +15,7 @@ unsigned long, addr) {
 		pgd_t *tmp_pgd = ts->mm->pgd;
 		struct mm_struct *mm = current->mm;
 		struct vm_area_struct *vma = find_vma(mm,fake_pgd);
-		remap_pfn_range(vma,fake_pgd,pgd,PTRS_PER_PGD*8,VM_READ);
+		remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*8,VM_READ);
 		// for (i = 0; i < PTRS_PER_PGD; ++i)
 		// {
   //   		pgd_t *pgd = ts->mm->pgd + i;

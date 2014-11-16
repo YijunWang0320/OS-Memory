@@ -47,7 +47,7 @@ static void walk_pmd(pud_t *pud, unsigned long start)
 
 	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
 		addr = start + i * PMD_SIZE;
-		if (pmd_none(*pmd) || pmd_large(*pmd) || !pmd_present(*pmd)) {
+		if (pmd_none(*pmd) || !pmd_present(*pmd)) {
 
 		//note_page(st, addr, 3, pmd_val(*pmd));
 		} else

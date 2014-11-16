@@ -53,7 +53,7 @@ static void walk_pmd(pud_t *pud, unsigned long start)
 	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
 		addr = start + i * PMD_SIZE;
 		if (pmd_none(*pmd) || pmd_large(*pmd) || !pmd_present(*pmd)) {
-
+			printk("pmd none\n");
 		//note_page(st, addr, 3, pmd_val(*pmd));
 		} else {
 			//printk("pte addr: %lu, pte addr: %lu \n", pmd_val(*pmd), *pmd);
@@ -76,7 +76,7 @@ static void walk_pud(pgd_t *pgd, unsigned long start)
 			walk_pmd(pud, addr);
 		} else {
 			//note_page(st, addr, 2, pud_val(*pud));
-			//printk("in pud there is none\n");
+			printk("in pud none\n");
 		}
 	}
 }

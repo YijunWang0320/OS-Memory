@@ -21,16 +21,16 @@ unsigned long, addr) {
     			if (pgd_none(*pgd) || pgd_bad(*pgd))
         			continue;
         		for (j = 0; j < PTRS_PER_PUD; j++){
-        			pud_t *pud = pgd + j * PUD_SIZE;
+        			pud_t *pud = *pgd + j * PUD_SIZE;
         			if(pud_none(*pud) || pud_bad(*pud))
         				continue;
         			for (k = 0; k < PTRS_PER_PMD; k++) {
-        				pmd_t *pmd = pud + k * PMD_SIZE;
+        				pmd_t *pmd = pud_val(*pud) + k * PMD_SIZE;
         				if (pmd_none(*pmd) || pmd_bad(*pmd))
         					continue;
     					for(l = 0; l < PTRS_PER_PTE; l++)
     					{
-    						pte_t *pte = pmd + l * PAGE_SIZE;
+    						pte_t *pte = pmd_val(*pmd) + l * PAGE_SIZE;
     						if (pte_none(pte))
         						continue;
     						//printk("[index]\t[virt]\t[phys]\t[young bit]\t[file bit]\t[dirty bit]\t[read-only bit]\t[xn bit]\n");

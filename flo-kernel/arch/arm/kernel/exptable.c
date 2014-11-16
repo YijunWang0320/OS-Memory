@@ -16,31 +16,76 @@ unsigned long, addr) {
 		//struct mm_struct *mm = current->mm;
 		//struct vm_area_struct *vma = find_vma(mm,fake_pgd);
 		//remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*8,VM_READ);
-		// for (i = 0; i < PTRS_PER_PGD; ++i) {
-  //   			pgd_t *pgd = ts->mm->pgd + i;
-  //   			if (pgd_none(*pgd) || pgd_bad(*pgd))
-  //       			continue;
-  //       		for (j = 0; j < PTRS_PER_PUD; j++){
-  //       			pud_t *pud = *pgd + j * PUD_SIZE;
-  //       			if(pud_none(*pud) || pud_bad(*pud))
-  //       				continue;
-  //       			for (k = 0; k < PTRS_PER_PMD; k++) {
-  //       				pmd_t *pmd = pud_val(*pud) + k * PMD_SIZE;
-  //       				if (pmd_none(*pmd) || pmd_bad(*pmd))
-  //       					continue;
-  //   					for(l = 0; l < PTRS_PER_PTE; l++)
-  //   					{
-  //   						pte_t *pte = pmd_val(*pmd) + l * PAGE_SIZE;
-  //   						if (pte_none(pte))
-  //       						continue;
-  //   						//printk("[index]\t[virt]\t[phys]\t[young bit]\t[file bit]\t[dirty bit]\t[read-only bit]\t[xn bit]\n");
-  //   						printk("%lu\t%X\t%X\t%lu\t%lu\t%lu\t%lu\t%lu\t\n", pte_index(*pte), 0, *pte, pte_young(*pte),pte_file(*pte),pte_dirty(*pte), pte_write(*pte), pte_exec(*pte));
-  //   						//struct mm_struct *mm = current->mm;
-  //   						//struct vm_area_struct *vma = find_vma(mm,addr); 
-  //   					}
-  //   				}
-  //   			}
-  //   	}
+		walk_pgd();
+
 	}
 	return 10;		
+}
+static void walk_pte(struct pg_state *st, pmd_t *pmd, unsigned long start)
+{
+	pte_t *pte = pte_offset_kernel(pmd, 0);
+	unsigned long addr;
+	unsigned i;
+
+	for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
+		addr = start + i * PAGE_SIZE;
+		//note_page(st, addr, 4, pte_val(*pte));
+		printk("pte: %lu\n",*pte);
+	}
+}
+
+static void walk_pmd(struct pg_state *st, pud_t *pud, unsigned long start)
+{
+	pmd_t *pmd = pmd_offset(pud, 0);
+	unsigned long addr;
+	unsigned i;
+
+	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
+		addr = start + i * PMD_SIZE;
+		if (pmd_none(*pmd) || pmd_large(*pmd) || !pmd_present(*pmd)) {
+
+		//note_page(st, addr, 3, pmd_val(*pmd));
+		} else
+			walk_pte(st, pmd, addr);
+	}
+}
+
+static void walk_pud(struct pg_state *st, pgd_t *pgd, unsigned long start)
+{
+	pud_t *pud = pud_offset(pgd, 0);
+	unsigned long addr;
+	unsigned i;
+
+	for (i = 0; i < PTRS_PER_PUD; i++, pud++) {
+		addr = start + i * PUD_SIZE;
+		if (!pud_none(*pud)) {
+			walk_pmd(st, pud, addr);
+		} else {
+			//note_page(st, addr, 2, pud_val(*pud));
+			//printk("in pud there is none\n");
+		}
+	}
+}
+
+static void walk_pgd()
+{
+	pgd_t *pgd = swapper_pg_dir;
+	struct pg_state st;
+	unsigned long addr;
+	unsigned i;
+
+	memset(&st, 0, sizeof(st));
+	st.seq = m;
+	st.marker = address_markers;
+
+	for (i = USER_PGTABLES_CEILING / PGDIR_SIZE;
+	     i < PTRS_PER_PGD; i++, pgd++) {
+		addr = i * PGDIR_SIZE;
+		if (!pgd_none(*pgd)) {
+			walk_pud(&st, pgd, addr);
+		} else {
+			//printk("in pdg none\n");
+// 			note_page(&st, addr, 1, pgd_val(*pgd));
+		}
+	}
 }

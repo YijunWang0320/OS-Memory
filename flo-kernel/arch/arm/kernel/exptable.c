@@ -18,7 +18,7 @@ unsigned long, addr) {
 		//remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*8,VM_READ);
 		//walk_pgd(ts->mm->pgd);
 		for(i=0;i<PTRS_PER_PGD;i++) {
-			pdg_t *pgd = ts->mm->pgd;
+			pgd_t *pgd = ts->mm->pgd;
 			printk("pgd:%lu,*pgd:%lu\n",pgd,*pgd);
 		}
 

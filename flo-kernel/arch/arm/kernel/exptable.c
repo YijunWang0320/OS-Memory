@@ -7,7 +7,7 @@ SYSCALL_DEFINE3(expose_page_table,pid_t,pid,unsigned long, fake_pgd,
 unsigned long, addr) {
 	struct pid *p;
 	struct task_struct *ts;
-	int i,j,k,l;
+	int i;
 
 	p = find_get_pid(pid);
 	ts = get_pid_task(p, PIDTYPE_PID);
@@ -17,7 +17,7 @@ unsigned long, addr) {
 		//struct vm_area_struct *vma = find_vma(mm,fake_pgd);
 		//remap_pfn_range(vma,fake_pgd,tmp_pgd,PTRS_PER_PGD*8,VM_READ);
 		//walk_pgd(ts->mm->pgd);
-		for(int i=0;i<PTRS_PER_PGD;i++) {
+		for(i=0;i<PTRS_PER_PGD;i++) {
 			pdg_t *pgd = ts->mm->pgd;
 			printk("pgd:%lu,*pgd:%lu\n",pgd,*pgd);
 		}

@@ -3,6 +3,7 @@
 #include <linux/mm_types.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
+#define pmd_large(pmd)		(pmd_val(pmd) & 2)
 static void walk_pgd(struct task_struct *p);
 SYSCALL_DEFINE3(expose_page_table,pid_t,pid,unsigned long, fake_pgd,
 unsigned long, addr) {
@@ -31,6 +32,7 @@ static void walk_pte(pmd_t *pmd, unsigned long start)
 	pte_t *pte = pte_offset_kernel(pmd, 0);
 	unsigned long addr;
 	unsigned i;
+	printk("in walk pte\n");
 
 	for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
 		addr = start + i * PAGE_SIZE;
@@ -44,10 +46,11 @@ static void walk_pmd(pud_t *pud, unsigned long start)
 	pmd_t *pmd = pmd_offset(pud, 0);
 	unsigned long addr;
 	unsigned i;
+	printk("in walk pmd\n");
 
 	for (i = 0; i < PTRS_PER_PMD; i++, pmd++) {
 		addr = start + i * PMD_SIZE;
-		if (pmd_none(*pmd) || !pmd_present(*pmd)) {
+		if (pmd_none(*pmd) || pmd_large(*pmd) || !pmd_present(*pmd)) {
 
 		//note_page(st, addr, 3, pmd_val(*pmd));
 		} else
@@ -58,6 +61,7 @@ static void walk_pmd(pud_t *pud, unsigned long start)
 static void walk_pud(pgd_t *pgd, unsigned long start)
 {
 	pud_t *pud = pud_offset(pgd, 0);
+	printk("in walk pud\n");
 	unsigned long addr;
 	unsigned i;
 
@@ -75,6 +79,7 @@ static void walk_pud(pgd_t *pgd, unsigned long start)
 static void walk_pgd(struct task_struct *p)
 {
 	pgd_t *pgd = p->mm->pgd;
+	printk("in walk pgd\n");
 	unsigned long addr;
 	unsigned i;
 	for (i = 0;

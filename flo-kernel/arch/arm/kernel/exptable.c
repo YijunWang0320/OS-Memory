@@ -18,7 +18,7 @@ unsigned long, addr) {
 		 struct mm_struct *mm = current->mm;
 		 struct vm_area_struct *vma = find_vma(mm,fake_pgd);
 		int i;
-		i = remap_pfn_range(vma,fake_pgd,tmp_pgd[0],PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
+		i = remap_pfn_range(vma,fake_pgd,tmp_pgd[0][0],PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
 		if(i != 0)
 			printk("fail to remap, i = %d \n", i);
 		// for(i=0;i<PTRS_PER_PGD;i++) {
@@ -93,7 +93,7 @@ static void walk_pgd(struct task_struct *p,unsigned long start)
 		addr = start + i * PGDIR_SIZE;
 		if (!pgd_none(*pgd)) {
 			walk_pud(pgd, addr);
-			printk("*pgd:%lu,pgd[0]:%lu,pgd[1]:%lu,pgd:%lu\n",*pgd,pgd[0],pgd[1],pgd);
+			printk("*pgd:%lu,pgd[0]:%lu,pgd[1]:%lu,pgd:%lu\n",*pgd,pgd[0][0],pgd[1],pgd);
 		} else {
 			//printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));

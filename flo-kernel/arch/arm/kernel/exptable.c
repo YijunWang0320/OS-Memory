@@ -89,13 +89,13 @@ static void walk_pgd(struct task_struct *p,unsigned long start)
 	unsigned long addr;
 	unsigned i;
 	for (i = 0;
-	     i < PTRS_PER_PGD; i++, pgd += 2) {
+	     i < PTRS_PER_PGD; i++) {
 		addr = start + i * PGDIR_SIZE;
-		if (!pgd_none(*pgd)) {
+		if (!pgd_none(pgd[0][i])) {
 			walk_pud(pgd, addr);
 			printk("*pgd:%lu,pgd[0]:%lu,pgd[1]:%lu,pgd:%lu\n",*pgd,pgd[0][0],pgd[1],pgd);
 		} else {
-			//printk("in pdg none\n");
+			printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));
 		}
 	}

@@ -90,8 +90,8 @@ static void walk_pgd(struct task_struct *p,unsigned long start)
 	unsigned i;
 	for (i = 0; i < PTRS_PER_PGD; i++) {
 		addr = start + i * PGDIR_SIZE;
-		if (!pgd_none(pgd[i][0])) {
-			walk_pud(pgd[i][0], addr);
+		if (!pgd_none(pgd[i])) {
+			walk_pud(pgd[i], addr);
 			//printk("*pgd:%lu,pgd[0][i]:%lu,pgd[1]:%lu,pgd:%lu\n",*pgd,pgd[i][0],pgd[1],pgd);
 		} else {
 			printk("in pdg none\n");

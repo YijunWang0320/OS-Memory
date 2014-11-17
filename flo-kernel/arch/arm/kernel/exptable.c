@@ -14,17 +14,9 @@ unsigned long, addr) {
 	p = find_get_pid(pid);
 	ts = get_pid_task(p, PIDTYPE_PID);
 	if(ts->mm!=NULL) {
-		 pgd_t *tmp_pgd = ts->mm->pgd;
-		 struct mm_struct *mm = current->mm;
-		 struct vm_area_struct *vma = find_vma(mm,fake_pgd);
-		int i;
-		// i = remap_pfn_range(vma,fake_pgd,tmp_pgd[0][0],PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
-		// if(i != 0)
-		// 	printk("fail to remap, i = %d \n", i);
-		// for(i=0;i<PTRS_PER_PGD;i++) {
-		// 	pgd_t *pgd = ts->mm->pgd + i;
-		// 	printk("pgd:%lu,*pgd:%lu\n",pgd,*pgd);
-		// }
+		pgd_t *tmp_pgd = ts->mm->pgd;
+		struct mm_struct *mm = current->mm;
+		struct vm_area_struct *vma = find_vma(mm,fake_pgd);
 		walk_pgd(ts,addr);
 	}
 	spin_unlock(&ts->alloc_lock);
@@ -93,7 +85,6 @@ static void walk_pgd(struct task_struct *p,unsigned long start)
 		if (!pgd_none(pgd[i])) {
 			walk_pud(pgd[i], addr);
 			printk("size of pgd[i]: %lu, %lu", sizeof(pgd[i]), sizeof(struct pgd_t));
-			//printk("*pgd:%lu,pgd[0][i]:%lu,pgd[1]:%lu,pgd:%lu\n",*pgd,pgd[i][0],pgd[1],pgd);
 		} else {
 			printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));

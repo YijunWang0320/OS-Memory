@@ -9,11 +9,10 @@
 static void walk_pgd(struct task_struct *p);
 static unsigned long cur_pgd;
 static unsigned long cur_addr;
-
+static struct task_struct *ts;
 SYSCALL_DEFINE3(expose_page_table,pid_t,pid,unsigned long, fake_pgd,
 unsigned long, addr) {
 	struct pid *p;
-	struct task_struct *ts;
 	int i;
 
 	cur_pgd = fake_pgd;
@@ -25,9 +24,6 @@ unsigned long, addr) {
 	ts = get_pid_task(p, PIDTYPE_PID);
 	spin_lock(&ts->alloc_lock);
 	if(ts->mm!=NULL) {
-		pgd_t *tmp_pgd = ts->mm->pgd;
-		struct mm_struct *mm = current->mm;
-		struct vm_area_struct *vma = find_vma(mm,fake_pgd);
 		//remap_pfn_range(vma,fake_pgd,tmp_pgd[0][0],PTRS_PER_PGD*sizeof(pgd_t),VM_READ);
 		walk_pgd(ts);
 	}
@@ -38,12 +34,17 @@ static void walk_pte(pmd_t *pmd)
 {
 	pte_t *pte = pte_offset_kernel(pmd, 0);
 	unsigned i;
-
-	for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
-		//addr = start + i * PAGE_SIZE;
-		//printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
-
-	}
+	// for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
+	// 	//addr = start + i * PAGE_SIZE;
+	// 	//printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
+	// }
+	struct mm_struct *mm = ts->mm;
+	struct vm_area_struct *vma = find_vma(mm,addr); 
+	//*cur_addr = pte;
+	remap_pfn_range(vma,cur_addr,pte,PTRS_PER_PTE*PTE_ENTRY_SIZE,VM_READ);
+	*fake_pgd = cur_addr;
+	cur_addr = cur_addr + PTRS_PER_PTE*PTE_ENTRY_SIZE;
+	fake_pge = fake_pgd + PGD_ENTRY_SIZE;
 }
 static void walk_pmd(pud_t *pud)
 {
@@ -87,8 +88,9 @@ static void walk_pgd(struct task_struct *p)
 	for (i = 0; i < PTRS_PER_PGD; i++) {
 		//addr = start + i * PGDIR_SIZE;
 		if (!pgd_none(pgd[i][0])) {
-			walk_pud(pgd[i]);
-			printk("size of pgd[i]: %d\n", sizeof(pgd[i]));
+			if(pgd[i][0] != 0)
+				walk_pud(pgd[i]);
+			//printk("size of pgd[i]: %d\n", sizeof(pgd[i]));
 		} else {
 			printk("in pdg none\n");
 // 			note_page(&st, addr, 1, pgd_val(*pgd));

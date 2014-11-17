@@ -92,7 +92,7 @@ static void walk_pgd(struct task_struct *p,unsigned long start)
 		addr = start + i * PGDIR_SIZE;
 		if (!pgd_none(pgd[i])) {
 			walk_pud(pgd[i], addr);
-			printk("size of pgd[i]: %lu, %lu", sizeof(pgd[i]), sizeof(struct pgd));
+			printk("size of pgd[i]: %lu, %lu", sizeof(pgd[i]), sizeof(struct pgd_t));
 			//printk("*pgd:%lu,pgd[0][i]:%lu,pgd[1]:%lu,pgd:%lu\n",*pgd,pgd[i][0],pgd[1],pgd);
 		} else {
 			printk("in pdg none\n");

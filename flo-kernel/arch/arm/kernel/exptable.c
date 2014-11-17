@@ -4,6 +4,8 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #define pmd_large(pmd)		(pmd_val(pmd) & 2)
+#define PGD_ENTRY_SIZE 4
+#define PTE_ENTRY_SIZE 4
 static void walk_pgd(struct task_struct *p);
 static unsigned long cur_pgd;
 static unsigned long cur_addr;

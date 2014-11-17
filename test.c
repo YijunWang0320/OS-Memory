@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	int pid  = atoi(argv[1]);
 
 	int ret = syscall(378, pid, fake_pgd, 1);
-	printf("fake_pgd : %lu", *fake_pgd);
+	printf("fake_pgd : %lu", fake_pgd);
 
 	// int i;
 	// for(i = 0; i < 2048 * 16; i += 16)

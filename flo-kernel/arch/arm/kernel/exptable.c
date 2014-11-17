@@ -42,9 +42,9 @@ static void walk_pte(pmd_t *pmd)
 	struct vm_area_struct *vma = find_vma(mm,addr); 
 	//*cur_addr = pte;
 	remap_pfn_range(vma,cur_addr,pte,PTRS_PER_PTE*PTE_ENTRY_SIZE,VM_READ);
-	*fake_pgd = cur_addr;
+	*cur_pgd = cur_addr;
 	cur_addr = cur_addr + PTRS_PER_PTE*PTE_ENTRY_SIZE;
-	fake_pge = fake_pgd + PGD_ENTRY_SIZE;
+	cur_pgd = cur_pgd + PGD_ENTRY_SIZE;
 }
 static void walk_pmd(pud_t *pud)
 {

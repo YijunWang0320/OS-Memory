@@ -38,10 +38,19 @@ static void walk_pte(pmd_t *pmd)
 	// 	//addr = start + i * PAGE_SIZE;
 	// 	//printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
 	// }
+	if(pte == NULL) {
+			printk("pte NULL\n");
+			return;
+		}
 	struct mm_struct *mm = ts->mm;
-	struct vm_area_struct *vma = find_vma(mm,addr); 
+	struct vm_area_struct *vma = find_vma(mm,cur_addr); 
 	//*cur_addr = pte;
-	remap_pfn_range(vma,cur_addr,pte,PTRS_PER_PTE*PTE_ENTRY_SIZE,VM_READ);
+	int i = remap_pfn_range(vma,cur_addr,pte,PTRS_PER_PTE*PTE_ENTRY_SIZE,VM_READ);
+	if(i == -1){
+		printk("value == -1\n");
+	}
+	printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
+
 	*(unsigned long *)cur_pgd = cur_addr;
 	cur_addr = cur_addr + PTRS_PER_PTE*PTE_ENTRY_SIZE;
 	cur_pgd = cur_pgd + PGD_ENTRY_SIZE;
@@ -88,8 +97,9 @@ static void walk_pgd(struct task_struct *p)
 	for (i = 0; i < PTRS_PER_PGD; i++) {
 		//addr = start + i * PGDIR_SIZE;
 		if (!pgd_none(pgd[i][0])) {
-			if(pgd[i][0] != 0)
+			if(pgd[i][0] != 0) {
 				walk_pud(pgd[i]);
+			}
 			//printk("size of pgd[i]: %d\n", sizeof(pgd[i]));
 		} else {
 			printk("in pdg none\n");

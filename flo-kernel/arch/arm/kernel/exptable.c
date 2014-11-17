@@ -33,7 +33,8 @@ unsigned long, addr) {
 static void walk_pte(pmd_t *pmd)
 {
 	pte_t *pte = pte_offset_kernel(pmd, 0);
-	unsigned i;
+	int i;
+	//unsigned i;
 	// for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
 	// 	//addr = start + i * PAGE_SIZE;
 	// 	//printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
@@ -45,7 +46,7 @@ static void walk_pte(pmd_t *pmd)
 	struct mm_struct *mm = ts->mm;
 	struct vm_area_struct *vma = find_vma(mm,cur_addr); 
 	//*cur_addr = pte;
-	int i = remap_pfn_range(vma,cur_addr,pte,PTRS_PER_PTE*PTE_ENTRY_SIZE,VM_READ);
+	i = remap_pfn_range(vma,cur_addr,pte,PTRS_PER_PTE*PTE_ENTRY_SIZE,VM_READ);
 	if(i == -1){
 		printk("value == -1\n");
 	}

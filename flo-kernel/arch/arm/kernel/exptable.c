@@ -33,7 +33,7 @@ static void walk_pte(pmd_t *pmd, unsigned long start)
 	for (i = 0; i < PTRS_PER_PTE; i++, pte++) {
 		addr = start + i * PAGE_SIZE;
 		//note_page(st, addr, 4, pte_val(*pte));
-		printk("pte: %lu,%lu,%lu\n",pte_val(*pte),*pte,pte);
+		printk("pte: %lu,%lu,%lu, %d\n",pte_val(*pte),*pte,pte, sizeof(pte));
 	}
 }
 static void walk_pmd(pud_t *pud, unsigned long start)
